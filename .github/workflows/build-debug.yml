@@ -21,19 +21,20 @@ jobs:
           java-version: 17
 
       - name: Ensure Gradle wrapper
-        working-directory: AudioManagerPersonal
+        working-directory: ./  # ✅ root of checked-out repo
         run: |
-          if [ ! -f gradlew ]; then
+          if [ ! -f AudioManagerPersonal/gradlew ]; then
+            cd AudioManagerPersonal
             gradle wrapper
           fi
-          chmod +x gradlew
+          chmod +x AudioManagerPersonal/gradlew
 
       - name: Clean Gradle build
-        working-directory: AudioManagerPersonal
+        working-directory: AudioManagerPersonal  # ✅ one level deep, correct folder
         run: ./gradlew clean
 
       - name: Build Debug APK
-        working-directory: AudioManagerPersonal
+        working-directory: AudioManagerPersonal  # ✅ same level as gradlew
         run: ./gradlew assembleDebug
 
       - name: Upload APK Artifact

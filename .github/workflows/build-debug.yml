@@ -19,23 +19,16 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-          
+
       - name: Set up Android SDK path
         run: echo "sdk.dir=/usr/local/lib/android/sdk" > local.properties
 
-      - name: Ensure Gradle wrapper
-        run: |
-          if [ ! -f gradlew ]; then
-            gradle wrapper
-          fi
-          chmod +x gradlew
-
-      - name: Clean Gradle build
+      - name: Clean Gradle caches
         run: |
           rm -rf ~/.gradle/caches
           ./gradlew clean
 
-      - name: Build Debug APK 
+      - name: Build Debug APK
         run: ./gradlew assembleDebug --stacktrace --info
 
       - name: Upload APK Artifact

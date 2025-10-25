@@ -31,7 +31,9 @@ jobs:
           chmod +x gradlew
 
       - name: Clean Gradle build
-        run: ./gradlew clean
+        run: |
+          rm -rf ~/.gradle/caches
+          ./gradlew clean
 
       - name: Build Debug APK (show Kotlin errors)
         run: ./gradlew assembleDebug --stacktrace --info --warning-mode all

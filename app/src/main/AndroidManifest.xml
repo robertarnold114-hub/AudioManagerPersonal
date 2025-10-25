@@ -3,11 +3,11 @@
     package="com.robertarnold.audiomanager">
 
     <application
-        android:allowBackup="true"
+        android:name=".App"
+        android:theme="@style/Theme.AudioManager"
         android:label="Audio Manager"
         android:icon="@mipmap/ic_launcher"
-        android:supportsRtl="true"
-        android:theme="@style/Theme.AudioManager">
+        android:supportsRtl="true">
 
         <activity
             android:name=".MainActivity"

@@ -5,4 +5,5 @@
     <color name="md_theme_light_onPrimaryContainer">#21005D</color>
     <color name="md_theme_light_surface">#FFFBFE</color>
     <color name="md_theme_light_onSurface">#1C1B1F</color>
+    <color name="ic_launcher_background">#2196F3</color>
 </resources>

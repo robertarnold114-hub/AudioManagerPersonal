@@ -26,12 +26,21 @@ jobs:
       - name: Set up Android SDK path
         run: echo "sdk.dir=/usr/local/lib/android/sdk" > local.properties
 
+      - name: Ensure Gradle wrapper exists
+        working-directory: AudioManagerPersonal
+        run: |
+          if [ ! -f gradlew ]; then
+          gradle wrapper
+          fi
+          chmod +x gradlew
+
       - name: Clean Gradle caches
         run: |
           rm -rf ~/.gradle/caches
           ./gradlew clean
 
       - name: Build Debug APK
+        working-directory: AudioManagerPersonal
         run: ./gradlew assembleDebug --stacktrace --info
 
       - name: Upload APK Artifact

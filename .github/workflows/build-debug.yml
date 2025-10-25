@@ -33,8 +33,8 @@ jobs:
       - name: Clean Gradle build
         run: ./gradlew clean
 
-      - name: Build Debug APK (debug info)
-        run: ./gradlew assembleDebug --stacktrace --info
+      - name: Build Debug APK (show Kotlin errors)
+        run: ./gradlew assembleDebug --stacktrace --info --warning-mode all
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4

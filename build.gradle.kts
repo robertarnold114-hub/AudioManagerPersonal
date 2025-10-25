@@ -1,4 +1,12 @@
-// Root-level Gradle build file for AudioManagerPersonal
+// Root-level Gradle build file
+
+pluginManagement {
+    repositories {
+        google()           // ✅ add this
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
 
 plugins {
     id("com.android.application") version "8.5.2" apply false

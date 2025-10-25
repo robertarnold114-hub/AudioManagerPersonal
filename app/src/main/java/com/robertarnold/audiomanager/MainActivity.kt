@@ -25,12 +25,14 @@ private val SELECTED_RINGTONE_KEY = stringPreferencesKey("selected_ringtone")
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setContent {
-            AudioManagerApp()
+    super.onCreate(savedInstanceState)
+    DynamicColors.applyToActivitiesIfAvailable(application)
+    setContent {
+        AudioManagerTheme {
+            // your app content
         }
     }
+}
 
     @Composable
     fun AudioManagerApp() {

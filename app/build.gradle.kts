@@ -5,29 +5,21 @@ plugins {
 }
 
 android {
-    namespace = "com.robertarnold.audiomanager"   // ✅ Add this line
+    namespace = "com.robertarnold.audiomanager"
 
-    compileSdk = 33
+    compileSdk = 34     // ⬅️ updated from 33 → 34
 
     defaultConfig {
         applicationId = "com.robertarnold.audiomanager"
         minSdk = 26
-        targetSdk = 33
+        targetSdk = 34   // ⬅️ optional but recommended
         versionCode = 1
         versionName = "1.0"
     }
 
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-        debug {
-            isDebuggable = true
-        }
+    buildFeatures {
+        compose = true
+        buildConfig = true
     }
 
     compileOptions {
@@ -35,8 +27,9 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-  kotlinOptions {
-    jvmTarget = "17"
+    kotlinOptions {
+        jvmTarget = "17"
+    }
 }
 
     buildFeatures {

@@ -29,12 +29,11 @@ jobs:
         run: echo "sdk.dir=/usr/local/lib/android/sdk" > local.properties
 
       - name: Install Android SDK 34
-        run: yes | sdkmanager "platforms;android-34" "build-tools;34.0.0"
-
-      - name: Install Android SDK 34
         run: |
           export ANDROID_SDK_ROOT=$ANDROID_HOME
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-34" "build-tools;34.0.0"
+          echo "Using ANDROID_HOME=$ANDROID_HOME"
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
       - name: Build Debug APK
         run: ./gradlew assembleDebug --stacktrace --info

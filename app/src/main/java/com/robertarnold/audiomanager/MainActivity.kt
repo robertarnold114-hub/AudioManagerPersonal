@@ -1,120 +1,78 @@
-@Composable
-fun AppDetailScreen(appName: String, onBack: () -> Unit) {
-    val context = LocalContext.current
-    val dataStore = ContextDataStore
-    val scope = rememberCoroutineScope()
+package com.robertarnold.audiomanager
 
-    val keyToggle = booleanPreferencesKey("toggle_${appName.hashCode()}")
-    val keyVolume = intPreferencesKey("volume_${appName.hashCode()}")
-    val keySound = stringPreferencesKey("sound_${appName.hashCode()}")
+import android.content.Intent
+import android.media.RingtoneManager
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 
-    var toggleState by remember { mutableStateOf(false) }
-    var volumeLevel by remember { mutableStateOf(5f) }
-    var selectedSound by remember { mutableStateOf("Default") }
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-    // Load saved settings
-    LaunchedEffect(Unit) {
-        val prefs = context.dataStore.data.first()
-        toggleState = prefs[keyToggle] ?: false
-        volumeLevel = prefs[keyVolume]?.toFloat() ?: 5f
-        selectedSound = prefs[keySound] ?: "Default"
+        setContent {
+            AudioManagerApp()
+        }
     }
 
-    // Launcher for picking a custom ringtone
-    val soundPicker = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        val uri: Uri? = result.data?.getParcelableExtra(Intent.EXTRA_RINGTONE_PICKED_URI)
-        if (uri != null) {
-            selectedSound = uri.toString()
-            scope.launch {
-                context.dataStore.edit { it[keySound] = uri.toString() }
+    @Composable
+    fun AudioManagerApp() {
+        var selectedSound by remember { mutableStateOf("Default notification sound") }
+
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Notification Sound Manager",
+                    style = MaterialTheme.typography.headlineMedium
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Text(
+                    text = "Selected: $selectedSound",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Button(
+                    onClick = { openRingtonePicker() },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Choose Notification Sound")
+                }
             }
         }
     }
 
-    // Function to play the selected sound at set volume
-    fun playTestNotification() {
-        val audioManager = context.getSystemService(AudioManager::class.java)
-        val originalVolume = audioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION)
-        val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION)
-        val newVolume = (maxVolume * (volumeLevel / 15f)).toInt().coerceIn(1, maxVolume)
-
-        audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, newVolume, 0)
-
-        val soundUri: Uri = if (selectedSound != "Default") {
-            Uri.parse(selectedSound)
-        } else {
-            RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        }
-
-        val ringtone = RingtoneManager.getRingtone(context, soundUri)
-        ringtone?.play()
-
-        // Restore volume after short delay
-        scope.launch {
-            kotlinx.coroutines.delay(2000)
-            audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, originalVolume, 0)
-        }
-    }
-
-    Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(appName, style = MaterialTheme.typography.headlineSmall)
-
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("Custom Sound:")
-            Switch(
-                checked = toggleState,
-                onCheckedChange = {
-                    toggleState = it
-                    scope.launch { context.dataStore.edit { prefs -> prefs[keyToggle] = it } }
-                }
+    private fun openRingtonePicker() {
+        val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
+            putExtra(
+                RingtoneManager.EXTRA_RINGTONE_TYPE,
+                RingtoneManager.TYPE_NOTIFICATION
+            )
+            putExtra(
+                RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT,
+                true
+            )
+            putExtra(
+                RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT,
+                true
             )
         }
-
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Text("Volume: ${volumeLevel.toInt()}", modifier = Modifier.align(Alignment.CenterHorizontally))
-            Slider(
-                value = volumeLevel,
-                onValueChange = {
-                    volumeLevel = it
-                    scope.launch { context.dataStore.edit { prefs -> prefs[keyVolume] = it.toInt() } }
-                },
-                valueRange = 0f..15f
-            )
-        }
-
-        Button(
-            onClick = {
-                val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
-                    putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_NOTIFICATION)
-                    putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Select Notification Sound")
-                }
-                soundPicker.launch(intent)
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Choose Notification Sound")
-        }
-
-        Text(
-            text = "Current Sound: ${if (selectedSound == "Default") "Default System" else selectedSound}",
-            style = MaterialTheme.typography.bodySmall
-        )
-
-        // ✅ NEW: Test Notification button
-        Button(
-            onClick = { playTestNotification() },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Test Notification Sound")
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(onClick = onBack, modifier = Modifier.fillMaxWidth()) {
-            Text("Back")
-        }
+        startActivity(intent)
     }
 }

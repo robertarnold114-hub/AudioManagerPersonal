@@ -26,6 +26,12 @@ jobs:
       - name: Set up Android SDK path
         run: echo "sdk.dir=/usr/local/lib/android/sdk" > local.properties
 
+      - name: Generate Gradle wrapper
+        working-directory: AudioManagerPersonal
+        run: |
+          gradle wrapper --gradle-version 8.5
+          chmod +x gradlew
+
       - name: Ensure Gradle wrapper exists
         working-directory: AudioManagerPersonal
         run: |

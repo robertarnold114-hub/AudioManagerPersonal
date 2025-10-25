@@ -3,11 +3,12 @@
     package="com.robertarnold.audiomanager">
 
     <application
-        android:name=".AudioManagerApp"
+        android:allowBackup="true"
         android:label="Audio Manager"
         android:icon="@mipmap/ic_launcher"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:theme="@style/Theme.NoTitleBar">
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AudioManager">
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -17,6 +18,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    </application>
 
+    </application>
 </manifest>

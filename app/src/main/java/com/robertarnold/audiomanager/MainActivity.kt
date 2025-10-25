@@ -1,91 +1,3 @@
-package com.robertarnold.audiomanager
-
-import android.content.Intent
-import android.media.AudioManager
-import android.media.RingtoneManager
-import android.net.Uri
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
-import androidx.datastore.preferences.core.*
-import androidx.datastore.preferences.preferencesDataStore
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-
-val ContextDataStore by preferencesDataStore("audio_manager_prefs")
-
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            MaterialTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    Dashboard()
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun Dashboard() {
-    var selectedApp by remember { mutableStateOf<String?>(null) }
-
-    if (selectedApp == null) {
-        AppListScreen(onAppSelected = { selectedApp = it })
-    } else {
-        AppDetailScreen(appName = selectedApp!!) {
-            selectedApp = null
-        }
-    }
-}
-
-@Composable
-fun AppListScreen(onAppSelected: (String) -> Unit) {
-    val context = LocalContext.current
-    val pm = context.packageManager
-    val apps = remember {
-        pm.getInstalledApplications(0)
-            .filter { pm.getLaunchIntentForPackage(it.packageName) != null }
-            .sortedBy { it.loadLabel(pm).toString() }
-    }
-
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Text(
-            text = "Installed Apps",
-            style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
-
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(apps) { app ->
-                val label = app.loadLabel(pm).toString()
-                Text(
-                    text = label,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onAppSelected(label) }
-                        .padding(12.dp)
-                )
-                Divider()
-            }
-        }
-    }
-}
-
 @Composable
 fun AppDetailScreen(appName: String, onBack: () -> Unit) {
     val context = LocalContext.current
@@ -116,6 +28,31 @@ fun AppDetailScreen(appName: String, onBack: () -> Unit) {
             scope.launch {
                 context.dataStore.edit { it[keySound] = uri.toString() }
             }
+        }
+    }
+
+    // Function to play the selected sound at set volume
+    fun playTestNotification() {
+        val audioManager = context.getSystemService(AudioManager::class.java)
+        val originalVolume = audioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION)
+        val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION)
+        val newVolume = (maxVolume * (volumeLevel / 15f)).toInt().coerceIn(1, maxVolume)
+
+        audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, newVolume, 0)
+
+        val soundUri: Uri = if (selectedSound != "Default") {
+            Uri.parse(selectedSound)
+        } else {
+            RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        }
+
+        val ringtone = RingtoneManager.getRingtone(context, soundUri)
+        ringtone?.play()
+
+        // Restore volume after short delay
+        scope.launch {
+            kotlinx.coroutines.delay(2000)
+            audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, originalVolume, 0)
         }
     }
 
@@ -166,6 +103,14 @@ fun AppDetailScreen(appName: String, onBack: () -> Unit) {
             text = "Current Sound: ${if (selectedSound == "Default") "Default System" else selectedSound}",
             style = MaterialTheme.typography.bodySmall
         )
+
+        // ✅ NEW: Test Notification button
+        Button(
+            onClick = { playTestNotification() },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Test Notification Sound")
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
         Button(onClick = onBack, modifier = Modifier.fillMaxWidth()) {

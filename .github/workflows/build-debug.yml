@@ -3,29 +3,41 @@ name: Build Debug APK
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   build:
-    - name: Ensure Gradle wrapper
-      working-directory: AudioManagerPersonal
-      run: |
-        if [ ! -f gradlew ]; then
-        gradle wrapper
-        fi
-        chmod +x gradlew
+    runs-on: ubuntu-latest
 
-    - name: Clean Gradle build
-      working-directory: AudioManagerPersonal
-      run: ./gradlew clean
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Build Debug APK
-      working-directory: AudioManagerPersonal
-      run: ./gradlew assembleDebug
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
 
-    - name: Upload APK Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: AudioManagerPersonal-debug
-        path: AudioManagerPersonal/app/build/outputs/apk/debug/app-debug.apk
+      - name: Ensure Gradle wrapper
+        working-directory: AudioManagerPersonal
+        run: |
+          if [ ! -f gradlew ]; then
+            gradle wrapper
+          fi
+          chmod +x gradlew
 
+      - name: Clean Gradle build
+        working-directory: AudioManagerPersonal
+        run: ./gradlew clean
+
+      - name: Build Debug APK
+        working-directory: AudioManagerPersonal
+        run: ./gradlew assembleDebug
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AudioManagerPersonal-debug
+          path: AudioManagerPersonal/app/build/outputs/apk/debug/app-debug.apk

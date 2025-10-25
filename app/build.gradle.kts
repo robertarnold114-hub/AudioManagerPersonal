@@ -5,13 +5,12 @@ plugins {
 }
 
 android {
-    namespace = "com.robertarnold.audiomanager"
-    compileSdk = 34
+        compileSdk = 33
 
     defaultConfig {
         applicationId = "com.robertarnold.audiomanager"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 

@@ -13,9 +13,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
-      - name: Verify project structure
-        run: ls -R   
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -23,22 +20,14 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Set up Android SDK path
-        run: echo "sdk.dir=/usr/local/lib/android/sdk" > local.properties
-
       - name: Generate Gradle wrapper
-        working-directory: AudioManagerPersonal
+        working-directory: .
         run: |
           gradle wrapper --gradle-version 8.5
           chmod +x gradlew
 
-      - name: Ensure Gradle wrapper exists
-        working-directory: AudioManagerPersonal
-        run: |
-          if [ ! -f gradlew ]; then
-          gradle wrapper
-          fi
-          chmod +x gradlew
+      - name: Set up Android SDK path
+        run: echo "sdk.dir=/usr/local/lib/android/sdk" > local.properties
 
       - name: Clean Gradle caches
         run: |
@@ -46,7 +35,6 @@ jobs:
           ./gradlew clean
 
       - name: Build Debug APK
-        working-directory: AudioManagerPersonal
         run: ./gradlew assembleDebug --stacktrace --info
 
       - name: Upload APK Artifact

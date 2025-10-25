@@ -3,15 +3,10 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-
-    <!-- Base shape -->
     <path
-        android:fillColor="?attr/colorPrimary"
-        android:pathData="M20,54c0,-18 14,-32 32,-32s32,14 32,32 -14,32 -32,32 -32,-14 -32,-32z" />
-
-    <!-- Bell / Symbol -->
+        android:fillColor="#2196F3"
+        android:pathData="M54,4A50,50 0,1 1,4,54A50,50 0,0 1,54,4z"/>
     <path
-        android:fillColor="?attr/colorOnPrimary"
-        android:pathData="M45,46l6,6 -6,6m12,-12l6,6 -6,6" />
+        android:fillColor="#FFFFFF"
+        android:pathData="M74,46 L54,66 L34,46 L40,40 L54,54 L68,40z"/>
 </vector>
-

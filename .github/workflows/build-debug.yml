@@ -35,8 +35,8 @@ jobs:
           rm -rf ~/.gradle/caches
           ./gradlew clean
 
-      - name: Build Debug APK (show Kotlin errors)
-        run: ./gradlew assembleDebug --stacktrace --info --warning-mode all
+      - name: Build Debug APK 
+        run: ./gradlew assembleDebug --stacktrace --info
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4

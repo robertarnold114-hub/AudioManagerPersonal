@@ -7,37 +7,25 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    - name: Ensure Gradle wrapper
+      working-directory: AudioManagerPersonal
+      run: |
+        if [ ! -f gradlew ]; then
+        gradle wrapper
+        fi
+        chmod +x gradlew
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-          
-      - name: Clean Gradle build
-        run: ./gradlew clean
+    - name: Clean Gradle build
+      working-directory: AudioManagerPersonal
+      run: ./gradlew clean
 
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v3
+    - name: Build Debug APK
+      working-directory: AudioManagerPersonal
+      run: ./gradlew assembleDebug
 
-      - name: Ensure Gradle wrapper
-        run: |
-          if [ ! -f gradlew ]; then
-            gradle wrapper
-          fi
-          chmod +x gradlew
+    - name: Upload APK Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: AudioManagerPersonal-debug
+        path: AudioManagerPersonal/app/build/outputs/apk/debug/app-debug.apk
 
-      - name: Build Debug APK
-        run: |
-          ./gradlew clean
-          ./gradlew assembleDebug
-
-      - name: Upload APK Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: AudioManagerPersonal-debug
-          path: app/build/outputs/apk/debug/app-debug.apk

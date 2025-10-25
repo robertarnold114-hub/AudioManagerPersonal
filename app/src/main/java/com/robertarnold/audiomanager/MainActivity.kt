@@ -1,7 +1,5 @@
 package com.robertarnold.audiomanager
 
-import android.media.AudioManager
-import android.media.RingtoneManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -26,56 +24,66 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AudioManagerApp() {
-    val audioManager = LocalContext.current.getSystemService(AudioManager::class.java)
-    var volume by remember { mutableIntStateOf(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)) }
-    val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+    // Simple state for demonstration
+    var volumeLevel by remember { mutableStateOf(50) }
+    var notificationsEnabled by remember { mutableStateOf(true) }
 
+    // ✅ Material 3 Compose-only theme — no XML dependencies
     MaterialTheme(
         colorScheme = lightColorScheme(),
-        typography = Typography()
+        typography = Typography(),
     ) {
         Surface(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
             color = MaterialTheme.colorScheme.background
         ) {
             Column(
+                modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxSize().padding(16.dp)
+                verticalArrangement = Arrangement.Center
             ) {
                 Text(
                     text = "Audio Manager",
-                    style = MaterialTheme.typography.headlineMedium
+                    style = MaterialTheme.typography.titleLarge.copy(fontSize = 28.sp),
+                    color = MaterialTheme.colorScheme.primary
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                Slider(
-                    value = volume.toFloat(),
-                    onValueChange = { newValue ->
-                        volume = newValue.toInt()
-                        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0)
-                    },
-                    valueRange = 0f..maxVolume.toFloat(),
-                    steps = maxVolume,
-                    modifier = Modifier.fillMaxWidth()
+                Text(
+                    text = "Volume: $volumeLevel%",
+                    style = MaterialTheme.typography.bodyLarge
                 )
 
-                Text(
-                    text = "Volume: $volume / $maxVolume",
-                    fontSize = 18.sp
+                Slider(
+                    value = volumeLevel.toFloat(),
+                    onValueChange = { volumeLevel = it.toInt() },
+                    valueRange = 0f..100f,
+                    modifier = Modifier.padding(horizontal = 24.dp)
                 )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(
+                        checked = notificationsEnabled,
+                        onCheckedChange = { notificationsEnabled = it }
+                    )
+                    Text(
+                        text = "Enable Notifications",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                Button(onClick = {
-                    val ringtone = RingtoneManager.getRingtone(
-                        LocalContext.current,
-                        RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-                    )
-                    ringtone.play()
-                }) {
-                    Text("Play Test Sound")
+                Button(
+                    onClick = { /* TODO: Apply user settings */ },
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary)
+                ) {
+                    Text("Apply Settings", color = MaterialTheme.colorScheme.onPrimary)
                 }
             }
         }
@@ -84,6 +92,6 @@ fun AudioManagerApp() {
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewAudioManagerApp() {
+fun AudioManagerPreview() {
     AudioManagerApp()
 }

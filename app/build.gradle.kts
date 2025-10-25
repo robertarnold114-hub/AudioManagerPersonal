@@ -5,7 +5,9 @@ plugins {
 }
 
 android {
-        compileSdk = 33
+    namespace = "com.robertarnold.audiomanager"   // ✅ Add this line
+
+    compileSdk = 33
 
     defaultConfig {
         applicationId = "com.robertarnold.audiomanager"
@@ -13,8 +15,6 @@ android {
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {

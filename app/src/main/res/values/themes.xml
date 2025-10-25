@@ -1,1 +1,6 @@
-<style name="Theme.AudioManager" parent="Theme.Material3.DynamicColors.DayNight.NoActionBar"/>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.AudioManager" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your theme colors if needed -->
+    </style>
+</resources>
+

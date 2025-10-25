@@ -1,1 +1,4 @@
-<resources><color name="ic_launcher_background">#222222</color></resources>
+<resources>
+    <!-- Background adjusts automatically using Material You -->
+    <color name="system_neutral1_100">@android:color/system_neutral1_100</color>
+</resources>
